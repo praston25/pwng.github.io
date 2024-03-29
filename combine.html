@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tool Keren by ChatGPT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #333;
+            color: #fff;
+        }
+
+        textarea,
+        button,
+        input[type="file"],
+        input[type="number"],
+        label {
+            background-color: #444;
+            color: #fff;
+            border: none;
+            padding: 8px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        input[type="file"] {
+            cursor: pointer;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        #output {
+            margin-top: 20px;
+        }
+
+        #output textarea {
+            width: 100%;
+            height: 200px;
+            padding: 5px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <h2>Random Results</h2>
+    <input type="file" id="fileInput">
+    <label for="numResults">Number of random results:</label>
+    <input type="number" id="numResults" min="1" value="10">
+    <label for="allowDuplicates">Allow duplicates:</label>
+    <input type="checkbox" id="allowDuplicates">
+    <button onclick="readFile()">Read File</button>
+    <div id="output">
+        <textarea id="resultTextarea" readonly></textarea>
+        <button onclick="copyToClipboard()">Copy to Clipboard</button>
+    </div>
+
+    <h2>Deteksi Duplikasi</h2>
+    <textarea id="inputData" rows="10" cols="50"></textarea><br>
+    <button onclick="deteksiDuplikasi()">Deteksi Duplikasi</button><br><br>
+    <div id="output">
+        <textarea id="hasilDeteksi" rows="10" cols="50" readonly></textarea>
+        <button onclick="copyToClipboardb()">Copy to Clipboard</button>
+    </div>
+    <script>
+        function deteksiDuplikasi() {
+            var e = document.getElementById("inputData").value.trim().split("\n"),
+                t = {},
+                n = e.length,
+                r = [],
+                o = [];
+            for (var i = 0; i < e.length; i++) {
+                var d = e[i];
+                t[d] = t[d] ? t[d] + 1 : 1;
+            }
+            for (var d in t)
+                t[d] > 1 ? r.push({
+                    data: d,
+                    count: t[d]
+                }) : o.push(d);
+            r.sort(function (e, t) {
+                return (t.count / n * 100 - e.count / n * 100);
+            });
+            var l = "";
+            if (0 === r.length) l = "Tidak ada duplikasi.";
+            else
+                for (var s = 0; s < r.length; s++) {
+                    var a = ((r[s].count / n) * 100).toFixed(2);
+                    l += a + "% | " + r[s].data + " | " + r[s].count + "\n";
+                }
+            if (o.length > 0) {
+                l += "\nData Tidak Terduplikasi:\n";
+                for (var s = 0; s < o.length; s++)
+                    l += o[s] + "\n";
+            }
+            document.getElementById("hasilDeteksi").value = l;
+        }
+
+        function readFile() {
+            var e = document.getElementById("fileInput"),
+                t = e.files[0],
+                n = parseInt(document.getElementById("numResults").value),
+                r = document.getElementById("allowDuplicates").checked,
+                o = new FileReader;
+            o.onload = function (e) {
+                var o = e.target.result;
+                o = o.replace(/\s+/g, "\n");
+                var u = o.split("\n"),
+                    a = getRandomElements(u, n, r),
+                    d = document.getElementById("resultTextarea");
+                d.value = a.join("\n");
+            },
+            o.readAsText(t);
+        }
+
+        function getRandomElements(e, t, n) {
+            var r = [],
+                o = e.length;
+            if (!n && t > o)
+                return alert("Number of results can't be greater than number of lines if duplicates are not allowed."), r;
+            for (; r.length < t;) {
+                var u = Math.floor(Math.random() * o);
+                r.push(e[u]), n || (e.splice(u, 1), o--);
+            }
+            return r;
+        }
+        function copyToClipboard() {
+            var copyText = document.getElementById("resultTextarea");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            alert("Text copied to clipboard");
+        }
+        function copyToClipboardb() {
+            var copyText = document.getElementById("hasilDeteksi");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            alert("Text copied to clipboard");
+        }        
+    </script>
+</body>
+</html>
